@@ -1,5 +1,7 @@
 LOCAL_PATH:= $(call my-dir)
 
+ifndef NOPATENT
+
 include $(CLEAR_VARS)
 
 LOCAL_SRC_FILES:=                 \
@@ -21,3 +23,5 @@ ifeq ($(TARGET_ARCH),arm)
 endif
 
 include $(BUILD_STATIC_LIBRARY)
+
+endif

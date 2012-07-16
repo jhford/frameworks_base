@@ -3,29 +3,23 @@ include $(CLEAR_VARS)
 
 include frameworks/base/media/libstagefright/codecs/common/Config.mk
 
+NOPATENT=1
+
 LOCAL_SRC_FILES:=                         \
         ACodec.cpp                        \
-        AACExtractor.cpp                  \
-        AACWriter.cpp                     \
-        AMRExtractor.cpp                  \
-        AMRWriter.cpp                     \
         AudioPlayer.cpp                   \
         AudioSource.cpp                   \
         AwesomePlayer.cpp                 \
         CameraSource.cpp                  \
         CameraSourceTimeLapse.cpp         \
-        VideoSourceDownSampler.cpp        \
         DataSource.cpp                    \
+        VideoSourceDownSampler.cpp        \
         DRMExtractor.cpp                  \
         ESDS.cpp                          \
         FileSource.cpp                    \
         FLACExtractor.cpp                 \
         HTTPBase.cpp                      \
         JPEGSource.cpp                    \
-        MP3Extractor.cpp                  \
-        MPEG2TSWriter.cpp                 \
-        MPEG4Extractor.cpp                \
-        MPEG4Writer.cpp                   \
         MediaBuffer.cpp                   \
         MediaBufferGroup.cpp              \
         MediaDefs.cpp                     \
@@ -52,6 +46,20 @@ LOCAL_SRC_FILES:=                         \
         XINGSeeker.cpp                    \
         avc_utils.cpp                     \
 
+ifndef NOPATENT
+LOCAL_SRC_FILES += \
+        AACExtractor.cpp                  \
+        AACWriter.cpp                     \
+        AMRExtractor.cpp                  \
+        AMRWriter.cpp                     \
+        MP3Extractor.cpp                  \
+        MPEG2TSWriter.cpp                 \
+        MPEG4Extractor.cpp                \
+        MPEG4Writer.cpp                   \
+
+
+endif #NOPATENT
+
 LOCAL_C_INCLUDES:= \
 	$(JNI_H_INCLUDE) \
         $(TOP)/frameworks/base/include/media/stagefright/openmax \
@@ -76,18 +84,23 @@ LOCAL_SHARED_LIBRARIES := \
 
 LOCAL_STATIC_LIBRARIES := \
         libstagefright_color_conversion \
+        libstagefright_matroska \
+        libstagefright_timedtext \
+        libvpx \
+        libstagefright_httplive \
+        libstagefright_id3 \
+        libFLAC \
+	
+ifndef NOPATENT
+LOCAL_STATIC_LIBRARIES += \
         libstagefright_aacenc \
         libstagefright_amrnbenc \
         libstagefright_amrwbenc \
         libstagefright_avcenc \
         libstagefright_m4vh263enc \
-        libstagefright_matroska \
-        libstagefright_timedtext \
-        libvpx \
         libstagefright_mpeg2ts \
-        libstagefright_httplive \
-        libstagefright_id3 \
-        libFLAC \
+
+endif #NOPATENT
 
 ################################################################################
 
@@ -142,11 +155,17 @@ endif  # ifeq ($(HTTP_STACK),chrome)
 ################################################################################
 
 LOCAL_SHARED_LIBRARIES += \
+        libstagefright_foundation \
+        libdl
+
+ifndef NOPATENT
+
+LOCAL_SHARED_LIBRARIES += \
         libstagefright_amrnb_common \
         libstagefright_enc_common \
         libstagefright_avc_common \
-        libstagefright_foundation \
-        libdl
+
+endif #NOPATENT
 
 LOCAL_CFLAGS += -Wno-multichar
 
@@ -154,4 +173,23 @@ LOCAL_MODULE:= libstagefright
 
 include $(BUILD_SHARED_LIBRARY)
 
+ifndef NOPATENT
 include $(call all-makefiles-under,$(LOCAL_PATH))
+else
+# XXX: This is kind of ugly.  The choice is to either filter out files which risks
+# including new codecs, or listing out the makefiles to include, which risks code breaking
+NOPATENT_MKFILE := \
+	matroska/Android.mk \
+	timedtext/Android.mk \
+	codecs/common/Android.mk \
+	codecs/vorbis/Android.mk \
+	id3/Android.mk \
+	omx/Android.mk \
+	foundation/Android.mk \
+	yuv/Android.mk \
+	httplive/Android.mk \
+	rtsp/Android.mk \
+	colorconversion/Android.mk \
+
+include $(addprefix $(LOCAL_PATH)/,$(NOPATENT_MKFILE))
+endif #NOPATENT

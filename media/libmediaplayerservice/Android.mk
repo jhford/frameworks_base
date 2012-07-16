@@ -1,5 +1,7 @@
 LOCAL_PATH:= $(call my-dir)
 
+NOPATENT=1
+
 #
 # libmediaplayerservice
 #
@@ -32,8 +34,13 @@ LOCAL_SHARED_LIBRARIES :=     		\
 	libdl
 
 LOCAL_STATIC_LIBRARIES := \
-        libstagefright_nuplayer                 \
         libstagefright_rtsp                     \
+
+ifndef NOPATENT
+LOCAL_STATIC_LIBRARIES += \
+        libstagefright_nuplayer                 \
+
+endif
 
 LOCAL_C_INCLUDES :=                                                 \
 	$(JNI_H_INCLUDE)                                                \
@@ -47,5 +54,6 @@ LOCAL_MODULE:= libmediaplayerservice
 
 include $(BUILD_SHARED_LIBRARY)
 
+ifndef NOPATENT
 include $(call all-makefiles-under,$(LOCAL_PATH))
-
+endif

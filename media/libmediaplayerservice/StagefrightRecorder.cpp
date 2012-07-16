@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+#define NOPATENT 1
 //#define LOG_NDEBUG 0
 #define LOG_TAG "StagefrightRecorder"
 #include <utils/Log.h>
@@ -25,12 +26,16 @@
 
 #include <media/IMediaPlayerService.h>
 #include <media/stagefright/AudioSource.h>
+#ifndef NOPATENT
 #include <media/stagefright/AMRWriter.h>
 #include <media/stagefright/AACWriter.h>
+#endif
 #include <media/stagefright/CameraSource.h>
 #include <media/stagefright/CameraSourceTimeLapse.h>
+#ifndef NOPATENT
 #include <media/stagefright/MPEG2TSWriter.h>
 #include <media/stagefright/MPEG4Writer.h>
+#endif
 #include <media/stagefright/MediaDebug.h>
 #include <media/stagefright/MediaDefs.h>
 #include <media/stagefright/MetaData.h>
@@ -745,6 +750,7 @@ status_t StagefrightRecorder::start() {
 
     switch (mOutputFormat) {
         case OUTPUT_FORMAT_DEFAULT:
+#ifndef NOPATENT
         case OUTPUT_FORMAT_THREE_GPP:
         case OUTPUT_FORMAT_MPEG_4:
             status = startMPEG4Recording();
@@ -767,7 +773,7 @@ status_t StagefrightRecorder::start() {
         case OUTPUT_FORMAT_MPEG2TS:
             status = startMPEG2TSRecording();
             break;
-
+#endif
         default:
             ALOGE("Unsupported output file format: %d", mOutputFormat);
             status = UNKNOWN_ERROR;
@@ -808,6 +814,7 @@ sp<MediaSource> StagefrightRecorder::createAudioSource() {
     sp<MetaData> encMeta = new MetaData;
     const char *mime;
     switch (mAudioEncoder) {
+#ifndef NOPATENT
         case AUDIO_ENCODER_AMR_NB:
         case AUDIO_ENCODER_DEFAULT:
             mime = MEDIA_MIMETYPE_AUDIO_AMR_NB;
@@ -818,6 +825,7 @@ sp<MediaSource> StagefrightRecorder::createAudioSource() {
         case AUDIO_ENCODER_AAC:
             mime = MEDIA_MIMETYPE_AUDIO_AAC;
             break;
+#endif
         default:
             ALOGE("Unknown audio encoder: %d", mAudioEncoder);
             return NULL;
@@ -846,6 +854,8 @@ sp<MediaSource> StagefrightRecorder::createAudioSource() {
 
     return audioEncoder;
 }
+
+#ifndef NOPATENT
 
 status_t StagefrightRecorder::startAACRecording() {
     // FIXME:
@@ -892,6 +902,8 @@ status_t StagefrightRecorder::startAMRRecording() {
     }
     return status;
 }
+
+#endif
 
 status_t StagefrightRecorder::startRawAudioRecording() {
     if (mAudioSource >= AUDIO_SOURCE_CNT) {
@@ -964,6 +976,8 @@ status_t StagefrightRecorder::startRTPRecording() {
     return mWriter->start();
 }
 
+#ifndef NOPATENT
+
 status_t StagefrightRecorder::startMPEG2TSRecording() {
     CHECK_EQ(mOutputFormat, OUTPUT_FORMAT_MPEG2TS);
 
@@ -1014,6 +1028,8 @@ status_t StagefrightRecorder::startMPEG2TSRecording() {
 
     return mWriter->start();
 }
+
+#endif
 
 void StagefrightRecorder::clipVideoFrameRate() {
     ALOGV("clipVideoFrameRate: encoder %d", mVideoEncoder);
@@ -1343,6 +1359,7 @@ status_t StagefrightRecorder::setupVideoEncoder(
     enc_meta->setInt32(kKeyFrameRate, mFrameRate);
 
     switch (mVideoEncoder) {
+#ifndef NOPATENT
         case VIDEO_ENCODER_H263:
             enc_meta->setCString(kKeyMIMEType, MEDIA_MIMETYPE_VIDEO_H263);
             break;
@@ -1354,7 +1371,7 @@ status_t StagefrightRecorder::setupVideoEncoder(
         case VIDEO_ENCODER_H264:
             enc_meta->setCString(kKeyMIMEType, MEDIA_MIMETYPE_VIDEO_AVC);
             break;
-
+#endif
         default:
             CHECK(!"Should not be here, unsupported video encoding.");
             break;
@@ -1426,11 +1443,12 @@ status_t StagefrightRecorder::setupAudioEncoder(const sp<MediaWriter>& writer) {
     }
 
     switch(mAudioEncoder) {
+#ifndef NOPATENT
         case AUDIO_ENCODER_AMR_NB:
         case AUDIO_ENCODER_AMR_WB:
         case AUDIO_ENCODER_AAC:
             break;
-
+#endif
         default:
             ALOGE("Unsupported audio encoder: %d", mAudioEncoder);
             return UNKNOWN_ERROR;
@@ -1444,6 +1462,9 @@ status_t StagefrightRecorder::setupAudioEncoder(const sp<MediaWriter>& writer) {
     writer->addSource(audioEncoder);
     return OK;
 }
+
+
+#ifndef NOPATENT
 
 status_t StagefrightRecorder::setupMPEG4Recording(
         int outputFd,
@@ -1546,6 +1567,8 @@ status_t StagefrightRecorder::startMPEG4Recording() {
 
     return OK;
 }
+
+#endif
 
 status_t StagefrightRecorder::pause() {
     ALOGV("pause");

@@ -17,6 +17,8 @@
 
 // Proxy for media player implementations
 
+#define NOPATENT 1
+
 //#define LOG_NDEBUG 0
 #define LOG_TAG "MediaPlayerService"
 #include <utils/Log.h>
@@ -66,7 +68,10 @@
 #include "MidiFile.h"
 #include "TestPlayerStub.h"
 #include "StagefrightPlayer.h"
+
+#ifndef NOPATENT
 #include "nuplayer/NuPlayerDriver.h"
+#endif
 
 #include <OMX.h>
 
@@ -621,10 +626,12 @@ static sp<MediaPlayerBase> createPlayer(player_type playerType, void* cookie,
             ALOGV(" create StagefrightPlayer");
             p = new StagefrightPlayer;
             break;
+#ifndef NOPATENT
         case NU_PLAYER:
             ALOGV(" create NuPlayer");
             p = new NuPlayerDriver;
             break;
+#endif
         case TEST_PLAYER:
             ALOGV("Create Test Player stub");
             p = new TestPlayerStub();

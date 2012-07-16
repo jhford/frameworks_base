@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+#define NOPATENT 1
+
 //#define LOG_NDEBUG 0
 #define LOG_TAG "OMXCodec"
 #include <utils/Log.h>
@@ -71,11 +73,13 @@ static sp<MediaSource> Make##name(const sp<MediaSource> &source, const sp<MetaDa
 
 #define FACTORY_REF(name) { #name, Make##name },
 
+#ifndef NOPATENT
 FACTORY_CREATE_ENCODER(AMRNBEncoder)
 FACTORY_CREATE_ENCODER(AMRWBEncoder)
 FACTORY_CREATE_ENCODER(AACEncoder)
 FACTORY_CREATE_ENCODER(AVCEncoder)
 FACTORY_CREATE_ENCODER(M4vH263Encoder)
+#endif
 
 static sp<MediaSource> InstantiateSoftwareEncoder(
         const char *name, const sp<MediaSource> &source,
@@ -86,11 +90,13 @@ static sp<MediaSource> InstantiateSoftwareEncoder(
     };
 
     static const FactoryInfo kFactoryInfo[] = {
+#ifndef NOPATENT
         FACTORY_REF(AMRNBEncoder)
         FACTORY_REF(AMRWBEncoder)
         FACTORY_REF(AACEncoder)
         FACTORY_REF(AVCEncoder)
         FACTORY_REF(M4vH263Encoder)
+#endif
     };
     for (size_t i = 0;
          i < sizeof(kFactoryInfo) / sizeof(kFactoryInfo[0]); ++i) {

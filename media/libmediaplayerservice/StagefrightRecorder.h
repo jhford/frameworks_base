@@ -24,6 +24,8 @@
 
 #include <system/audio.h>
 
+#define NOPATENT=1
+
 namespace android {
 
 class Camera;
@@ -121,6 +123,7 @@ private:
     // frame buffers will be queued and dequeued
     sp<SurfaceMediaSource> mSurfaceMediaSource;
 
+#ifndef NOPATENT
     status_t setupMPEG4Recording(
         int outputFd,
         int32_t videoWidth, int32_t videoHeight,
@@ -132,9 +135,12 @@ private:
     status_t startMPEG4Recording();
     status_t startAMRRecording();
     status_t startAACRecording();
+#endif
     status_t startRawAudioRecording();
     status_t startRTPRecording();
+#ifndef NOPATENT
     status_t startMPEG2TSRecording();
+#endif
     sp<MediaSource> createAudioSource();
     status_t checkVideoEncoderCapabilities();
     status_t checkAudioEncoderCapabilities();

@@ -14,6 +14,8 @@
 # limitations under the License.
 #
 
+NOPATENT:=1
+
 LOCAL_PATH := $(call my-dir)
 include $(CLEAR_VARS)
 
@@ -28,29 +30,50 @@ LOCAL_SRC_FILES := \
 	rtp_jni.cpp
 
 LOCAL_SRC_FILES += \
-	AmrCodec.cpp \
 	G711Codec.cpp \
 	GsmCodec.cpp
+
+ifndef NOPATENT
+LOCAL_SRC_FILES += \
+	AmrCodec.cpp \
+
+endif
+
 
 LOCAL_SHARED_LIBRARIES := \
 	libnativehelper \
 	libcutils \
 	libutils \
 	libmedia \
-	libstagefright_amrnb_common
 
-LOCAL_STATIC_LIBRARIES := libgsm libstagefright_amrnbdec libstagefright_amrnbenc
+ifndef NOPATENT
+LOCAL_SHARED_LIBRARIES += \
+	libstagefright_amrnb_common
+endif
+
+LOCAL_STATIC_LIBRARIES := libgsm
+
+ifndef NOPATENT
+
+LOCAL_STATIC_LIBRARIES += libstagefright_amrnbdec libstagefright_amrnbenc
+
+endif
 
 LOCAL_C_INCLUDES += \
 	$(JNI_H_INCLUDE) \
 	external/libgsm/inc \
+	system/media/audio_effects/include \
+
+ifndef NOPATENT
+LOCAL_C_INCLUDES += \
 	frameworks/base/media/libstagefright/codecs/amrnb/common/include \
 	frameworks/base/media/libstagefright/codecs/amrnb/common/ \
 	frameworks/base/media/libstagefright/codecs/amrnb/enc/include \
 	frameworks/base/media/libstagefright/codecs/amrnb/enc/src \
 	frameworks/base/media/libstagefright/codecs/amrnb/dec/include \
 	frameworks/base/media/libstagefright/codecs/amrnb/dec/src \
-	system/media/audio_effects/include
+
+endif
 
 LOCAL_CFLAGS += -fvisibility=hidden
 

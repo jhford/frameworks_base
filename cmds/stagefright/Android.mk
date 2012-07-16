@@ -1,5 +1,8 @@
 LOCAL_PATH:= $(call my-dir)
 
+NOPATENT:=1
+ifndef NOPATENT
+
 include $(CLEAR_VARS)
 
 LOCAL_SRC_FILES:=       \
@@ -147,4 +150,4 @@ LOCAL_MODULE:= sf2
 
 include $(BUILD_EXECUTABLE)
 
-
+endif

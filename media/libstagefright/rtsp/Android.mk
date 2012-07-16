@@ -2,12 +2,9 @@ LOCAL_PATH:= $(call my-dir)
 
 include $(CLEAR_VARS)
 
+NOPATENT=1
+
 LOCAL_SRC_FILES:=       \
-        AAMRAssembler.cpp           \
-        AAVCAssembler.cpp           \
-        AH263Assembler.cpp          \
-        AMPEG4AudioAssembler.cpp    \
-        AMPEG4ElementaryAssembler.cpp \
         APacketSource.cpp           \
         ARawAudioAssembler.cpp      \
         ARTPAssembler.cpp           \
@@ -16,6 +13,16 @@ LOCAL_SRC_FILES:=       \
         ARTPWriter.cpp              \
         ARTSPConnection.cpp         \
         ASessionDescription.cpp     \
+
+ifndef NOPATENT
+LOCAL_SRC_FILES += \
+        AAMRAssembler.cpp           \
+        AAVCAssembler.cpp           \
+        AH263Assembler.cpp          \
+        AMPEG4AudioAssembler.cpp    \
+        AMPEG4ElementaryAssembler.cpp \
+
+endif #NOPATENT
 
 LOCAL_C_INCLUDES:= \
 	$(JNI_H_INCLUDE) \

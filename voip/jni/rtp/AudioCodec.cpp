@@ -14,15 +14,18 @@
  * limitations under the License.
  */
 
+#define NOPATENT 1
 #include <strings.h>
 
 #include "AudioCodec.h"
 
 extern AudioCodec *newAlawCodec();
 extern AudioCodec *newUlawCodec();
+#ifndef NOPATENT
 extern AudioCodec *newGsmCodec();
 extern AudioCodec *newAmrCodec();
 extern AudioCodec *newGsmEfrCodec();
+#endif
 
 struct AudioCodecType {
     const char *name;
@@ -30,9 +33,11 @@ struct AudioCodecType {
 } gAudioCodecTypes[] = {
     {"PCMA", newAlawCodec},
     {"PCMU", newUlawCodec},
+#ifndef NOPATENT
     {"GSM", newGsmCodec},
     {"AMR", newAmrCodec},
     {"GSM-EFR", newGsmEfrCodec},
+#endif
     {NULL, NULL},
 };
 

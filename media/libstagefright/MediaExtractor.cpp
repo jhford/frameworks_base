@@ -14,21 +14,25 @@
  * limitations under the License.
  */
 
+#define NOPATENT 1
+
 //#define LOG_NDEBUG 0
 #define LOG_TAG "MediaExtractor"
 #include <utils/Log.h>
 
+#ifndef NOPATENT
 #include "include/AMRExtractor.h"
 #include "include/MP3Extractor.h"
-#include "include/MPEG4Extractor.h"
-#include "include/WAVExtractor.h"
-#include "include/OggExtractor.h"
 #include "include/MPEG2PSExtractor.h"
 #include "include/MPEG2TSExtractor.h"
-#include "include/DRMExtractor.h"
-#include "include/WVMExtractor.h"
-#include "include/FLACExtractor.h"
+#include "include/MPEG4Extractor.h"
 #include "include/AACExtractor.h"
+#include "include/WVMExtractor.h"
+#endif //NOPATENT
+#include "include/WAVExtractor.h"
+#include "include/OggExtractor.h"
+#include "include/DRMExtractor.h"
+#include "include/FLACExtractor.h"
 
 #include "matroska/MatroskaExtractor.h"
 
@@ -91,6 +95,7 @@ sp<MediaExtractor> MediaExtractor::Create(
     }
 
     MediaExtractor *ret = NULL;
+#ifndef NOPATENT
     if (!strcasecmp(mime, MEDIA_MIMETYPE_CONTAINER_MPEG4)
             || !strcasecmp(mime, "audio/mp4")) {
         ret = new MPEG4Extractor(source);
@@ -99,7 +104,9 @@ sp<MediaExtractor> MediaExtractor::Create(
     } else if (!strcasecmp(mime, MEDIA_MIMETYPE_AUDIO_AMR_NB)
             || !strcasecmp(mime, MEDIA_MIMETYPE_AUDIO_AMR_WB)) {
         ret = new AMRExtractor(source);
-    } else if (!strcasecmp(mime, MEDIA_MIMETYPE_AUDIO_FLAC)) {
+    } else 
+#endif //NOPATENT
+            if (!strcasecmp(mime, MEDIA_MIMETYPE_AUDIO_FLAC)) {
         ret = new FLACExtractor(source);
     } else if (!strcasecmp(mime, MEDIA_MIMETYPE_CONTAINER_WAV)) {
         ret = new WAVExtractor(source);
@@ -107,7 +114,9 @@ sp<MediaExtractor> MediaExtractor::Create(
         ret = new OggExtractor(source);
     } else if (!strcasecmp(mime, MEDIA_MIMETYPE_CONTAINER_MATROSKA)) {
         ret = new MatroskaExtractor(source);
-    } else if (!strcasecmp(mime, MEDIA_MIMETYPE_CONTAINER_MPEG2TS)) {
+    } 
+#ifndef NOPATENT
+      else if (!strcasecmp(mime, MEDIA_MIMETYPE_CONTAINER_MPEG2TS)) {
         ret = new MPEG2TSExtractor(source);
     } else if (!strcasecmp(mime, MEDIA_MIMETYPE_CONTAINER_WVM)) {
         ret = new WVMExtractor(source);
@@ -116,6 +125,7 @@ sp<MediaExtractor> MediaExtractor::Create(
     } else if (!strcasecmp(mime, MEDIA_MIMETYPE_CONTAINER_MPEG2PS)) {
         ret = new MPEG2PSExtractor(source);
     }
+#endif //NOPATENT
 
     if (ret != NULL) {
        if (isDrm) {
